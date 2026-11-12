@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusBite - Restaurant Ordering & Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- React & Babel for zero-install preview -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #ff5722;
+      --primary-hover: #e64a19;
+      --primary-light: #fff3e0;
+      --primary-focus: rgba(255, 87, 34, 0.2);
+      --secondary: #263238;
+      --accent: #ff9800;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --info: #3b82f6;
+      --info-bg: #eff6ff;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input, select, textarea { font-family: inherit; font-size: 0.95rem; }
+    .app-container { min-height: 100vh; display: flex; flex-direction: column; }
+    .main-content { flex: 1; padding: 2rem 1.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .navbar { background: #ffffff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow-sm); }
+    .nav-container { max-width: 1200px; margin: 0 auto; padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+    .nav-brand span { color: var(--secondary); }
+    .nav-links { display: flex; align-items: center; gap: 1rem; }
+    .nav-link { font-weight: 600; font-size: 0.9rem; color: var(--text-muted); padding: 0.4rem 0.65rem; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 0.35rem; }
+    .nav-link:hover, .nav-link.active { color: var(--primary); background: var(--primary-light); }
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .cart-btn { position: relative; display: flex; align-items: center; padding: 0.5rem 0.85rem; border-radius: var(--radius-md); background: var(--primary-light); color: var(--primary); font-weight: 700; gap: 0.4rem; }
+    .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 800; padding: 2px 6px; min-width: 20px; text-align: center; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.55rem 1.15rem; font-size: 0.92rem; font-weight: 600; border-radius: var(--radius-md); transition: all 0.15s ease; }
+    .btn-primary { background: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #ffffff; color: var(--text-main); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #f8fafc; }
+    .btn-outline-primary { border: 1.5px solid var(--primary); color: var(--primary); }
+    .btn-outline-primary:hover { background: var(--primary-light); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.82rem; border-radius: var(--radius-sm); }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-sm); }
+    .form-group { margin-bottom: 1.15rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: var(--secondary); }
+    .form-control { width: 100%; padding: 0.6rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .status-placed { background: #e0f2fe; color: #0284c7; }
+    .status-accepted { background: #fef3c7; color: #d97706; }
+    .status-preparing { background: #ffedd5; color: #ea580c; }
+    .status-ready { background: #f3e8ff; color: #9333ea; }
+    .status-assigned { background: #e0e7ff; color: #4f46e5; }
+    .status-out_for_delivery { background: #cffafe; color: #0891b2; }
+    .status-delivered { background: #dcfce7; color: #16a34a; }
+    .status-cancelled { background: #fee2e2; color: #dc2626; }
+    .status-refunded { background: #f1f5f9; color: #475569; }
+    .role-badge { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: var(--radius-full); text-transform: uppercase; font-weight: 800; }
+    .role-badge.customer { background: #e0f2fe; color: #0369a1; }
+    .role-badge.owner { background: #fef3c7; color: #b45309; }
+    .role-badge.delivery { background: #dcfce7; color: #15803d; }
+    .demo-bar { background: #1e293b; color: #cbd5e1; padding: 0.45rem 1.5rem; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .demo-chip { padding: 0.2rem 0.6rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.1); color: #f1f5f9; font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+    .demo-chip.active { background: var(--primary); color: #fff; }
+    .alert { padding: 0.85rem 1.15rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 0.88rem; display: flex; gap: 0.6rem; align-items: center; }
+    .alert-warning { background: var(--warning-bg); border: 1px solid #fde68a; color: #92400e; }
+    .alert-danger { background: var(--danger-bg); border: 1px solid #fecaca; color: #991b1b; }
+    .alert-info { background: var(--info-bg); border: 1px solid #bfdbfe; color: #1e40af; }
+    .table-responsive { width: 100%; overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .data-table th { background: #f8fafc; padding: 0.75rem 1rem; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.72rem; }
+    .data-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+    .modal-content { background: #fff; border-radius: var(--radius-lg); max-width: 520px; width: 100%; padding: 1.75rem; box-shadow: var(--shadow-lg); }
+    .order-tracker { display: flex; align-items: center; justify-content: space-between; position: relative; margin: 1.5rem 0; }
+    .tracker-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; flex: 1; }
+    .tracker-node { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; background: #e2e8f0; color: #64748b; margin-bottom: 4px; }
+    .tracker-step.completed .tracker-node { background: var(--success); color: #fff; }
+    .tracker-step.current .tracker-node { background: var(--primary); color: #fff; box-shadow: 0 0 0 3px var(--primary-focus); }
+    .tracker-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
+    .tracker-step.completed .tracker-label, .tracker-step.current .tracker-label { color: var(--text-main); font-weight: 700; }
+    .tracker-line { position: absolute; top: 16px; left: 5%; right: 5%; height: 3px; background: #e2e8f0; z-index: 0; }
+    .tracker-line-progress { height: 100%; background: var(--primary); }
+    .footer { background: #fff; border-top: 1px solid var(--border); padding: 2rem 1.5rem; color: var(--text-muted); font-size: 0.85rem; margin-top: auto; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Seed Data
+    const INITIAL_RESTAURANTS = [
+      { id: 1, name: 'Campus Spice Hub', cuisine: 'North Indian, Street Food & Biryani', rating: 4.6, reviewCount: 184, deliveryTime: '20-30 min', minOrder: 150, image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&auto=format&fit=crop&q=60', address: 'Student Center Food Court, Shop #2', description: 'Authentic rich curries, freshly baked garlic naans, and signature Dum Biryanis for university foodies.' },
+      { id: 2, name: 'Bite & Brew Cafe', cuisine: 'Burgers, Artisan Coffee & Wraps', rating: 4.8, reviewCount: 320, deliveryTime: '15-25 min', minOrder: 120, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=60', address: 'Central Library Walkway, Gate #3', description: 'Your late-night study fueling station with smash burgers, crispy tenders, and iced cold brews.' },
+      { id: 3, name: 'Wok & Roll Asian Bowl', cuisine: 'Pan-Asian, Noodles & Dimsums', rating: 4.5, reviewCount: 142, deliveryTime: '25-35 min', minOrder: 180, image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&auto=format&fit=crop&q=60', address: 'Engineering Quad Eatery, Bay 5', description: 'Sizzling hot Hakka noodles, Thai basil chicken, and freshly steamed dim sums made fresh to order.' },
+      { id: 4, name: 'Bella Italia Pizzeria', cuisine: 'Woodfired Pizza, Pastas & Garlic Breads', rating: 4.7, reviewCount: 210, deliveryTime: '20-35 min', minOrder: 200, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=60', address: 'Sports Complex Plaza, Shop 4', description: 'Crispy sourdough Neapolitan pizza baked with imported mozzarella and herbs.' }
+    ];
+
+    const INITIAL_MENU = [
+      { id: 101, restaurantId: 1, name: 'Hyderabadi Dum Chicken Biryani', description: 'Slow-cooked aromatic basmati rice layered with marinated tender chicken and fragrant saffron.', price: 249, category: 'Biryani', is_available: true, image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60' },
+      { id: 102, restaurantId: 1, name: 'Paneer Butter Masala', description: 'Cottage cheese cubes simmered in a luscious rich butter and tomato gravy.', price: 199, category: 'Curry', is_available: true, image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=60' },
+      { id: 103, restaurantId: 1, name: 'Garlic Butter Naan (2 Pcs)', description: 'Clay-oven tandoor bread brushed with melted butter and fresh minced garlic.', price: 79, category: 'Breads', is_available: true, image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=60' },
+      { id: 201, restaurantId: 2, name: 'Crispy Spicy Chicken Burger', description: 'Crispy fried chicken breast, pickled jalapenos, melted cheese and house chipotle sauce.', price: 179, category: 'Burgers', is_available: true, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60' },
+      { id: 202, restaurantId: 2, name: 'Double Cheeseburger', description: 'Double grilled patties with cheddar cheese, lettuce, tomato, and caramelized onions.', price: 199, category: 'Burgers', is_available: true, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&auto=format&fit=crop&q=60' },
+      { id: 401, restaurantId: 4, name: 'Margherita Woodfired Pizza', description: 'San Marzano tomato sauce, fresh mozzarella balls, virgin olive oil, and fresh basil.', price: 269, category: 'Pizza', is_available: true, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60' }
+    ];
+
+    const INITIAL_ORDERS = [
+      { id: 1001, customerId: 1, customerName: 'Aarav Sharma', customerPhone: '+91 98765 43210', restaurantId: 1, restaurantName: 'Campus Spice Hub', status: 'DELIVERED', paymentStatus: 'mock_paid', orderDate: '2026-11-08T18:30:00Z', items: [{ id: 101, name: 'Hyderabadi Dum Chicken Biryani', price: 249, quantity: 2 }], total: 528, deliveryAddress: 'Hostel Block 4, Room 302', assignedTo: 3, deliveryPartnerName: 'Rohan Verma', review: { rating: 5, comment: 'Arrived steaming hot! Excellent.' }, returnRequest: null },
+      { id: 1002, customerId: 1, customerName: 'Aarav Sharma', customerPhone: '+91 98765 43210', restaurantId: 1, restaurantName: 'Campus Spice Hub', status: 'PLACED', paymentStatus: 'mock_paid', orderDate: new Date(Date.now() - 20 * 60 * 1000).toISOString(), items: [{ id: 102, name: 'Paneer Butter Masala', price: 199, quantity: 1 }], total: 234, deliveryAddress: 'Hostel Block 4, Room 302', assignedTo: null, deliveryPartnerName: null, review: null, returnRequest: null },
+      { id: 1003, customerId: 1, customerName: 'Aarav Sharma', customerPhone: '+91 98765 43210', restaurantId: 1, restaurantName: 'Campus Spice Hub', status: 'READY', paymentStatus: 'mock_paid', orderDate: new Date(Date.now() - 35 * 60 * 1000).toISOString(), items: [{ id: 101, name: 'Hyderabadi Dum Chicken Biryani', price: 249, quantity: 1 }], total: 286, deliveryAddress: 'Hostel Block 4, Room 302', assignedTo: null, deliveryPartnerName: null, review: null, returnRequest: null },
+      { id: 1004, customerId: 1, customerName: 'Aarav Sharma', customerPhone: '+91 98765 43210', restaurantId: 1, restaurantName: 'Campus Spice Hub', status: 'ASSIGNED', paymentStatus: 'mock_paid', orderDate: new Date(Date.now() - 45 * 60 * 1000).toISOString(), items: [{ id: 103, name: 'Garlic Butter Naan', price: 79, quantity: 3 }], total: 274, deliveryAddress: 'Hostel Block 4, Room 302', assignedTo: 3, deliveryPartnerName: 'Rohan Verma', review: null, returnRequest: null }
+    ];
+
+    function App() {
+      // Role & Navigation State
+      const [role, setRole] = useState('customer'); // 'customer' | 'restaurant_owner' | 'delivery_partner'
+      const [page, setPage] = useState('restaurants'); // 'restaurants' | 'menu' | 'cart' | 'my_orders' | 'ai_insights' | 'owner_dashboard' | 'owner_orders' | 'menu_manage' | 'delivery_dashboard'
+      const [selectedRestaurant, setSelectedRestaurant] = useState(INITIAL_RESTAURANTS[0]);
+
+      // App Data
+      const [restaurants, setRestaurants] = useState(INITIAL_RESTAURANTS);
+      const [menuItems, setMenuItems] = useState(INITIAL_MENU);
+      const [orders, setOrders] = useState(INITIAL_ORDERS);
+      const [cart, setCart] = useState([]);
+      const [search, setSearch] = useState('');
+
+      // Cart calculations
+      const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      const deliveryFee = cart.length > 0 ? 25 : 0;
+      const total = subtotal + deliveryFee;
+
+      const addToCart = (dish) => {
+        setCart(prev => {
+          const ex = prev.find(i => i.id === dish.id);
+          if (ex) return prev.map(i => i.id === dish.id ? { ...i, quantity: i.quantity + 1 } : i);
+          return [...prev, { ...dish, quantity: 1 }];
+        });
+      };
+
+      const placeDummyOrder = () => {
+        const newOrder = {
+          id: Math.floor(1000 + Math.random() * 9000),
+          customerId: 1,
+          customerName: 'Aarav Sharma',
+          customerPhone: '+91 98765 43210',
+          restaurantId: selectedRestaurant.id,
+          restaurantName: selectedRestaurant.name,
+          status: 'PLACED',
+          paymentStatus: 'mock_paid',
+          orderDate: new Date().toISOString(),
+          items: [...cart],
+          total: total,
+          deliveryAddress: 'Hostel Block 4, Room 302',
+          assignedTo: null,
+          deliveryPartnerName: null,
+          review: null,
+          returnRequest: null
+        };
+        setOrders([newOrder, ...orders]);
+        setCart([]);
+        setPage('my_orders');
+      };
+
+      const cancelOrder = (orderId) => {
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: 'CANCELLED', paymentStatus: 'refunded' } : o));
+      };
+
+      const updateOrderStatus = (orderId, newStatus) => {
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      };
+
+      const assignDelivery = (orderId) => {
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: 'ASSIGNED', assignedTo: 3, deliveryPartnerName: 'Rohan Verma' } : o));
+      };
+
+      const switchRole = (newRole) => {
+        setRole(newRole);
+        if (newRole === 'customer') setPage('restaurants');
+        if (newRole === 'restaurant_owner') setPage('owner_dashboard');
+        if (newRole === 'delivery_partner') setPage('delivery_dashboard');
+      };
+
+      return (
+        <div className="app-container">
+          {/* Top Demo Bar */}
+          <div className="demo-bar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>⚡ Switch Role Demo:</span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button className={`demo-chip ${role === 'customer' ? 'active' : ''}`} onClick={() => switchRole('customer')}>
+                👤 Customer (Aarav)
+              </button>
+              <button className={`demo-chip ${role === 'restaurant_owner' ? 'active' : ''}`} onClick={() => switchRole('restaurant_owner')}>
+                🍳 Owner (Priya)
+              </button>
+              <button className={`demo-chip ${role === 'delivery_partner' ? 'active' : ''}`} onClick={() => switchRole('delivery_partner')}>
+                🛵 Delivery (Rohan)
+              </button>
+            </div>
+          </div>
+
+          {/* Navigation Bar */}
+          <nav className="navbar">
+            <div className="nav-container">
+              <div className="nav-brand" style={{ cursor: 'pointer' }} onClick={() => switchRole(role)}>
+                Campus<span>Bite</span>
+              </div>
+
+              <div className="nav-links">
+                {role === 'customer' && (
+                  <>
+                    <button className={`nav-link ${page === 'restaurants' ? 'active' : ''}`} onClick={() => setPage('restaurants')}>
+                      🍽️ Restaurants
+                    </button>
+                    <button className={`nav-link ${page === 'my_orders' ? 'active' : ''}`} onClick={() => setPage('my_orders')}>
+                      📦 My Orders ({orders.filter(o => o.customerId === 1).length})
+                    </button>
+                    <button className={`nav-link ${page === 'ai_insights' ? 'active' : ''}`} onClick={() => setPage('ai_insights')}>
+                      ✨ AI Insights
+                    </button>
+                  </>
+                )}
+
+                {role === 'restaurant_owner' && (
+                  <>
+                    <button className={`nav-link ${page === 'owner_dashboard' ? 'active' : ''}`} onClick={() => setPage('owner_dashboard')}>
+                      📊 Dashboard
+                    </button>
+                    <button className={`nav-link ${page === 'owner_orders' ? 'active' : ''}`} onClick={() => setPage('owner_orders')}>
+                      📋 Kitchen Orders
+                    </button>
+                    <button className={`nav-link ${page === 'menu_manage' ? 'active' : ''}`} onClick={() => setPage('menu_manage')}>
+                      🍳 Menu Items
+                    </button>
+                  </>
+                )}
+
+                {role === 'delivery_partner' && (
+                  <button className={`nav-link ${page === 'delivery_dashboard' ? 'active' : ''}`} onClick={() => setPage('delivery_dashboard')}>
+                    🛵 Assigned Deliveries
+                  </button>
+                )}
+              </div>
+
+              <div className="nav-actions">
+                {role === 'customer' && (
+                  <button className="cart-btn" onClick={() => setPage('cart')}>
+                    <span>Cart</span>
+                    {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                  </button>
+                )}
+                <span className={`role-badge ${role === 'customer' ? 'customer' : role === 'restaurant_owner' ? 'owner' : 'delivery'}`}>
+                  {role.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
+          </nav>
+
+          {/* Main Views */}
+          <main className="main-content">
+            {/* VIEW 1: RESTAURANT LISTING */}
+            {role === 'customer' && page === 'restaurants' && (
+              <div>
+                <div style={{ background: 'linear-gradient(135deg, #ff5722, #e64a19)', color: '#fff', padding: '2rem', borderRadius: 'var(--radius-lg)', marginBottom: '2rem' }}>
+                  <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Campus Dining Network</h1>
+                  <p style={{ opacity: 0.9 }}>Browse live campus food menus, order with dummy payments & track delivery</p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                  {restaurants.map(r => (
+                    <div key={r.id} className="card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer' }} onClick={() => { setSelectedRestaurant(r); setPage('menu'); }}>
+                      <img src={r.image} style={{ width: '100%', height: 160, objectFit: 'cover' }} />
+                      <div style={{ padding: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>{r.name}</h3>
+                          <span style={{ fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '2px 6px', borderRadius: 4, fontSize: '0.8rem' }}>★ {r.rating}</span>
+                        </div>
+                        <p style={{ color: 'var(--primary)', fontSize: '0.82rem', fontWeight: 600, margin: '4px 0' }}>{r.cuisine}</p>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>{r.description}</p>
+                        <button className="btn btn-outline-primary btn-sm" style={{ marginTop: '1rem', width: '100%' }}>View Menu</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 2: RESTAURANT MENU */}
+            {role === 'customer' && page === 'menu' && (
+              <div>
+                <button className="btn btn-secondary btn-sm" onClick={() => setPage('restaurants')} style={{ marginBottom: '1rem' }}>
+                  ← Back to Eateries
+                </button>
+                <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <img src={selectedRestaurant.image} style={{ width: 80, height: 80, borderRadius: 8, objectFit: 'cover' }} />
+                  <div>
+                    <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>{selectedRestaurant.name}</h2>
+                    <p style={{ color: 'var(--primary)', fontWeight: 600 }}>{selectedRestaurant.cuisine}</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>📍 {selectedRestaurant.address} • ⏱️ {selectedRestaurant.deliveryTime}</p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.25rem' }}>
+                  {menuItems.filter(m => m.restaurantId === selectedRestaurant.id || selectedRestaurant.id === 1).map(dish => (
+                    <div key={dish.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <img src={dish.image} style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 6, marginBottom: '0.75rem' }} />
+                      <h4 style={{ fontWeight: 700 }}>{dish.name}</h4>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', flex: 1, margin: '4px 0 8px 0' }}>{dish.description}</p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary)' }}>₹{dish.price}</span>
+                        <button className="btn btn-primary btn-sm" onClick={() => addToCart(dish)}>+ Add to Cart</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {cartCount > 0 && (
+                  <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', background: 'var(--secondary)', color: '#fff', padding: '0.85rem 1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', gap: '2rem', alignItems: 'center', boxShadow: 'var(--shadow-lg)' }}>
+                    <span>{cartCount} items in cart • ₹{total}</span>
+                    <button className="btn btn-primary btn-sm" onClick={() => setPage('cart')}>Go to Cart →</button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 3: CART & DUMMY CHECKOUT */}
+            {role === 'customer' && page === 'cart' && (
+              <div style={{ maxWidth: 700, margin: '0 auto' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>Order Cart & Dummy Checkout</h2>
+                {cart.length === 0 ? (
+                  <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+                    <p style={{ color: 'var(--text-muted)' }}>Your cart is empty.</p>
+                    <button className="btn btn-primary" onClick={() => setPage('restaurants')} style={{ marginTop: '1rem' }}>Explore Menu</button>
+                  </div>
+                ) : (
+                  <div className="card">
+                    {cart.map(item => (
+                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid var(--border-light)' }}>
+                        <div>
+                          <strong>{item.name}</strong>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>₹{item.price} each</div>
+                        </div>
+                        <div style={{ fontWeight: 800 }}>Qty: {item.quantity} (₹{item.price * item.quantity})</div>
+                      </div>
+                    ))}
+                    <div style={{ margin: '1.5rem 0', padding: '1rem', background: '#f8fafc', borderRadius: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}><span>Subtotal</span><span>₹{subtotal}</span></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}><span>Campus Delivery</span><span>₹{deliveryFee}</span></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '1.1rem', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                        <span>Total</span><span style={{ color: 'var(--primary)' }}>₹{total}</span>
+                      </div>
+                    </div>
+                    <div className="alert alert-info" style={{ fontSize: '0.82rem' }}>
+                      💳 <strong>Dummy Payment (PRD Section 5):</strong> Click below to simulate instant payment (marked as <code>mock_paid</code>).
+                    </div>
+                    <button className="btn btn-primary" style={{ width: '100%', padding: '0.85rem' }} onClick={placeDummyOrder}>
+                      Confirm & Pay (₹{total} Dummy Payment)
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 4: CUSTOMER ORDERS */}
+            {role === 'customer' && page === 'my_orders' && (
+              <div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem' }}>My Orders & Lifecycle Tracker</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  {orders.map(o => (
+                    <div key={o.id} className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-light)', paddingBottom: '0.75rem' }}>
+                        <div>
+                          <strong>Order #{o.id}</strong> • <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{o.restaurantName}</span>
+                        </div>
+                        <div>
+                          <span className={`status-badge status-${o.status.toLowerCase()}`}>{o.status}</span>
+                        </div>
+                      </div>
+
+                      {/* Tracker */}
+                      {['CANCELLED', 'REFUNDED'].includes(o.status) ? (
+                        <div className="alert alert-danger" style={{ margin: '1rem 0' }}>Status: {o.status}</div>
+                      ) : (
+                        <div className="order-tracker">
+                          {['PLACED', 'ACCEPTED', 'PREPARING', 'READY', 'ASSIGNED', 'OUT_FOR_DELIVERY', 'DELIVERED'].map((st, idx) => {
+                            const steps = ['PLACED', 'ACCEPTED', 'PREPARING', 'READY', 'ASSIGNED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+                            const currIdx = steps.indexOf(o.status);
+                            const done = idx <= currIdx;
+                            return (
+                              <div key={st} className={`tracker-step ${done ? 'completed' : ''}`}>
+                                <div className="tracker-node">{done ? '✓' : idx + 1}</div>
+                                <span className="tracker-label">{st}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                        Items: {(o.items || []).map(i => `${i.quantity}x ${i.name}`).join(', ')} • Total: ₹{o.total}
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                        {o.status === 'PLACED' && (
+                          <button className="btn btn-danger btn-sm" onClick={() => cancelOrder(o.id)}>Cancel Order</button>
+                        )}
+                        {o.status === 'DELIVERED' && (
+                          <button className="btn btn-outline-primary btn-sm" onClick={() => alert('Review submitted for Order #' + o.id)}>★ Leave Review</button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 5: AI ORDER INSIGHTS */}
+            {role === 'customer' && page === 'ai_insights' && (
+              <div style={{ maxWidth: 700, margin: '0 auto' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, textAlign: 'center', marginBottom: '0.5rem' }}>✨ Applied AI Order Insights</h2>
+                <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Ask questions about your campus orders and food spending</p>
+                <div className="card" style={{ padding: '1.5rem' }}>
+                  <div style={{ background: '#f1f5f9', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.92rem' }}>
+                    🤖 <strong>CampusBite AI:</strong> You have placed {orders.length} orders totaling ₹{orders.reduce((s,o)=>s+o.total,0)}. Your favorite food is Hyderabadi Dum Chicken Biryani!
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                    {['Summarize my last orders', 'Which orders are still active?', 'How much did I spend this week?'].map(q => (
+                      <button key={q} className="demo-chip" style={{ background: 'var(--primary-light)', color: 'var(--primary)', border: '1px solid #ffd8a8' }} onClick={() => alert('AI Response for: ' + q)}>
+                        💡 {q}
+                      </button>
+                    ))}
+                  </div>
+                  <input className="form-control" placeholder="Ask AI assistant about your orders..." />
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 6: RESTAURANT OWNER DASHBOARD */}
+            {role === 'restaurant_owner' && page === 'owner_dashboard' && (
+              <div>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>Restaurant Operations Portal</h2>
+                <div className="alert alert-warning">
+                  ⚠️ <strong>Background Reminder:</strong> Order #1002 has been in PLACED status for &gt;15 minutes! Please update preparation.
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+                  <div className="card"><h3>₹{orders.reduce((s,o)=>s+o.total,0)}</h3><p style={{ color: 'var(--text-muted)' }}>Total Revenue</p></div>
+                  <div className="card"><h3>{orders.length}</h3><p style={{ color: 'var(--text-muted)' }}>Total Orders</p></div>
+                  <div className="card"><h3>{orders.filter(o=>!['DELIVERED','CANCELLED'].includes(o.status)).length}</h3><p style={{ color: 'var(--text-muted)' }}>Active Kitchen Orders</p></div>
+                </div>
+                <button className="btn btn-primary" onClick={() => setPage('owner_orders')}>Manage Kitchen Orders & Assign Drivers →</button>
+              </div>
+            )}
+
+            {/* VIEW 7: OWNER ORDERS */}
+            {role === 'restaurant_owner' && page === 'owner_orders' && (
+              <div>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>Kitchen Orders & Lifecycle Actions</h2>
+                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr><th>Order #</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Lifecycle Action</th></tr>
+                    </thead>
+                    <tbody>
+                      {orders.map(o => (
+                        <tr key={o.id}>
+                          <td><strong>#{o.id}</strong></td>
+                          <td>{o.customerName}</td>
+                          <td>{(o.items||[]).map(i=>`${i.quantity}x ${i.name}`).join(', ')}</td>
+                          <td>₹{o.total}</td>
+                          <td><span className={`status-badge status-${o.status.toLowerCase()}`}>{o.status}</span></td>
+                          <td>
+                            {o.status === 'PLACED' && <button className="btn btn-primary btn-sm" onClick={() => updateOrderStatus(o.id, 'ACCEPTED')}>Accept Order</button>}
+                            {o.status === 'ACCEPTED' && <button className="btn btn-secondary btn-sm" onClick={() => updateOrderStatus(o.id, 'PREPARING')}>Start Preparing</button>}
+                            {o.status === 'PREPARING' && <button className="btn btn-success btn-sm" onClick={() => updateOrderStatus(o.id, 'READY')}>Mark Ready</button>}
+                            {o.status === 'READY' && <button className="btn btn-outline-primary btn-sm" onClick={() => assignDelivery(o.id)}>Assign Rider</button>}
+                            {['ASSIGNED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'].includes(o.status) && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No action required</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 8: MENU MANAGEMENT */}
+            {role === 'restaurant_owner' && page === 'menu_manage' && (
+              <div>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>Menu Management</h2>
+                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                  <table className="data-table">
+                    <thead><tr><th>Dish</th><th>Category</th><th>Price</th><th>Availability</th></tr></thead>
+                    <tbody>
+                      {menuItems.map(m => (
+                        <tr key={m.id}>
+                          <td><strong>{m.name}</strong></td>
+                          <td>{m.category}</td>
+                          <td>₹{m.price}</td>
+                          <td>
+                            <button
+                              style={{ padding: '2px 8px', borderRadius: 12, border: 'none', background: m.is_available ? 'var(--success-bg)' : 'var(--danger-bg)', color: m.is_available ? 'var(--success)' : 'var(--danger)', fontWeight: 700 }}
+                              onClick={() => setMenuItems(menuItems.map(i => i.id === m.id ? { ...i, is_available: !i.is_available } : i))}
+                            >
+                              {m.is_available ? '● Available' : '○ Unavailable'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 9: DELIVERY PARTNER */}
+            {role === 'delivery_partner' && (
+              <div>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>Delivery Partner Tasks</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {orders.filter(o => ['ASSIGNED', 'OUT_FOR_DELIVERY'].includes(o.status)).map(o => (
+                    <div key={o.id} className="card">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <strong>Order #{o.id} • {o.restaurantName}</strong>
+                        <span className={`status-badge status-${o.status.toLowerCase()}`}>{o.status}</span>
+                      </div>
+                      <p style={{ fontSize: '0.88rem' }}>📍 Drop: <strong>{o.deliveryAddress}</strong> • 👤 {o.customerName} ({o.customerPhone})</p>
+                      <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                        {o.status === 'ASSIGNED' && (
+                          <button className="btn btn-primary btn-sm" onClick={() => updateOrderStatus(o.id, 'OUT_FOR_DELIVERY')}>Pick Up & Out for Delivery</button>
+                        )}
+                        {o.status === 'OUT_FOR_DELIVERY' && (
+                          <button className="btn btn-success btn-sm" onClick={() => updateOrderStatus(o.id, 'DELIVERED')}>Mark Delivered ✓</button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {orders.filter(o => ['ASSIGNED', 'OUT_FOR_DELIVERY'].includes(o.status)).length === 0 && (
+                    <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
+                      <p style={{ color: 'var(--text-muted)' }}>No active orders currently assigned to you.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </main>
+
+          <footer className="footer">
+            <div style={{ textAlign: 'center' }}>
+              CampusBite • Full-Stack Restaurant Ordering & Delivery Platform
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
