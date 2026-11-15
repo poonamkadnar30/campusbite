@@ -13,9 +13,10 @@ router = APIRouter(prefix="/restaurants", tags=["Restaurants & Menus"])
 @router.get("", response_model=List[schemas.RestaurantOut])
 def list_restaurants(
     search: Optional[str] = Query(None, description="Search by name, cuisine, or address"),
+    sort_by: Optional[str] = Query(None, description="Sort options: rating, deliveryTime, minOrder"),
     db: Session = Depends(get_db)
 ):
-    """Retrieves all campus restaurants, with optional search filtering."""
+    """Retrieves all campus restaurants, with optional search filtering and sorting."""
     query = db.query(models.Restaurant)
     if search:
         s = f"%{search.lower()}%"
@@ -26,6 +27,14 @@ def list_restaurants(
                 models.Restaurant.address.ilike(s)
             )
         )
+
+    if sort_by == "rating":
+        query = query.order_by(models.Restaurant.rating.desc())
+    elif sort_by == "minOrder":
+        query = query.order_by(models.Restaurant.min_order.asc())
+    else:
+        query = query.order_by(models.Restaurant.id.asc())
+
     restaurants = query.all()
 
     # Format camelCase helper fields for frontend compatibility

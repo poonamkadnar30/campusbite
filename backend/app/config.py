@@ -8,6 +8,7 @@ class Settings:
     PROJECT_NAME: str = "CampusBite API"
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
 
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./campusbite.db")
     

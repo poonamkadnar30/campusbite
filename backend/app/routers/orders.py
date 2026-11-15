@@ -80,16 +80,22 @@ def create_order(order_in: schemas.OrderCreate, db: Session = Depends(get_db)):
     """
     cust_id = order_in.customerId or 1
 
+    # Validate financial calculations integrity
+    computed_subtotal = sum(item.price * item.quantity for item in order_in.items)
+    delivery_fee = order_in.deliveryFee if order_in.deliveryFee is not None else 25.0
+    computed_taxes = round(computed_subtotal * 0.05, 2) if order_in.taxes is None else order_in.taxes
+    expected_total = round(computed_subtotal + delivery_fee + computed_taxes, 2)
+
     new_order = models.Order(
         customer_id=cust_id,
         restaurant_id=order_in.restaurantId,
         status="PLACED",
         payment_status="mock_paid",
-        subtotal=order_in.subtotal,
-        delivery_fee=order_in.deliveryFee or 25.0,
-        taxes=order_in.taxes or 0.0,
-        total=order_in.total,
-        delivery_address=order_in.deliveryAddress,
+        subtotal=round(computed_subtotal, 2),
+        delivery_fee=delivery_fee,
+        taxes=computed_taxes,
+        total=expected_total,
+        delivery_address=order_in.deliveryAddress.strip(),
         notes=order_in.notes,
         created_at=datetime.datetime.utcnow(),
     )
