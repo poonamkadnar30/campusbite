@@ -7,16 +7,17 @@ export const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedCuisine, setSelectedCuisine] = useState('ALL');
+  const [sortBy, setSortBy] = useState('default');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadRestaurants();
-  }, [search]);
+  }, [search, sortBy]);
 
   const loadRestaurants = async () => {
     setLoading(true);
     try {
-      const data = await apiGetRestaurants(search);
+      const data = await apiGetRestaurants(search, sortBy === 'default' ? '' : sortBy);
       setRestaurants(data);
     } catch (err) {
       console.error('Failed to load restaurants', err);
@@ -113,27 +114,43 @@ export const RestaurantList = () => {
         </div>
       </section>
 
-      {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1.75rem' }}>
-        {cuisines.map((c) => (
-          <button
-            key={c.key}
-            onClick={() => setSelectedCuisine(c.key)}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: 'var(--radius-full)',
-              fontSize: '0.88rem',
-              fontWeight: 600,
-              border: selectedCuisine === c.key ? '1px solid var(--primary)' : '1px solid var(--border)',
-              background: selectedCuisine === c.key ? 'var(--primary-light)' : '#ffffff',
-              color: selectedCuisine === c.key ? 'var(--primary)' : 'var(--text-main)',
-              whiteSpace: 'nowrap',
-              transition: 'all 0.15s ease',
-            }}
+      {/* Filter Tabs & Sort Controls */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
+          {cuisines.map((c) => (
+            <button
+              key={c.key}
+              onClick={() => setSelectedCuisine(c.key)}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: 'var(--radius-full)',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                border: selectedCuisine === c.key ? '1px solid var(--primary)' : '1px solid var(--border)',
+                background: selectedCuisine === c.key ? 'var(--primary-light)' : '#ffffff',
+                color: selectedCuisine === c.key ? 'var(--primary)' : 'var(--text-main)',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Sort by:</span>
+          <select
+            className="form-control"
+            style={{ width: 'auto', padding: '0.35rem 0.65rem', fontSize: '0.85rem' }}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
           >
-            {c.label}
-          </button>
-        ))}
+            <option value="default">Default</option>
+            <option value="rating">Top Rated (★)</option>
+            <option value="minOrder">Lowest Min Order</option>
+          </select>
+        </div>
       </div>
 
       {/* Restaurant Cards Grid */}

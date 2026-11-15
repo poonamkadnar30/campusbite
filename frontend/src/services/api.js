@@ -166,15 +166,18 @@ export const apiRegister = async (userData) => {
    2. RESTAURANTS & MENUS
    ========================================================================= */
 
-export const apiGetRestaurants = async (searchQuery = '') => {
+export const apiGetRestaurants = async (searchQuery = '', sortBy = '') => {
   try {
-    const q = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
-    return await request(`/restaurants${q}`);
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('search', searchQuery);
+    if (sortBy) params.append('sort_by', sortBy);
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    return await request(`/restaurants${qs}`);
   } catch (err) {
     if (err.message !== 'MOCK_FALLBACK') throw err;
 
     const db = getMockDB();
-    let list = db.restaurants;
+    let list = [...db.restaurants];
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
@@ -183,6 +186,11 @@ export const apiGetRestaurants = async (searchQuery = '') => {
           r.cuisine.toLowerCase().includes(q) ||
           r.address.toLowerCase().includes(q)
       );
+    }
+    if (sortBy === 'rating') {
+      list.sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === 'minOrder') {
+      list.sort((a, b) => a.minOrder - b.minOrder);
     }
     return list;
   }

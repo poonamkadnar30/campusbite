@@ -21,6 +21,10 @@ export const Navbar = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Icons.ShieldCheck size={14} color="#94a3b8" />
           <span>Demo Role Switcher:</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#86efac', background: 'rgba(34, 197, 94, 0.15)', padding: '2px 8px', borderRadius: '12px' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }}></span>
+            Campus System Active
+          </span>
         </div>
         <div className="demo-bar-actions">
           <button
